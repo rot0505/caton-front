@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import Web3Providers from "@/lib/web3Provider";
-import Header from "@/pages/Header";
+import Header from "@/components/Header";
 import "@rainbow-me/rainbowkit/styles.css";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -20,10 +20,12 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <div className="bg-gray-900 h-screen">
+        <div className="bg-gray-900 h-screen text-white">
           <Web3Providers>
             <Header />
-            <div className="flex flex-col p-8 h-full">{children}</div>
+            <div className="p-8 h-full max-w-3xl mx-auto shadow-lg">
+              {children}
+            </div>
           </Web3Providers>
         </div>
       </body>

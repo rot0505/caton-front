@@ -12,24 +12,24 @@ import {
   ledgerWallet,
 } from "@rainbow-me/rainbowkit/wallets";
 import { configureChains, createConfig, WagmiConfig } from "wagmi";
-import { mainnet, optimism } from "wagmi/chains";
+import { mainnet, optimism, sepolia } from "wagmi/chains";
 import { publicProvider } from "wagmi/providers/public";
 
 const projectId = process.env.NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID;
 
 const { chains, publicClient, webSocketPublicClient } = configureChains(
-  [mainnet, optimism],
+  [mainnet, optimism, sepolia],
   [publicProvider()],
 );
 
 const { wallets } = getDefaultWallets({
-  appName: "Dashboard",
+  appName: "Caton",
   projectId: projectId as string,
   chains,
 });
 
 const demoAppInfo = {
-  appName: "Dashboard",
+  appName: "Caton",
 };
 
 const connectors = connectorsForWallets([
