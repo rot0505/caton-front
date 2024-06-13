@@ -8,5 +8,5 @@ export const bigNumberToDecimal = (
   bigNumber: ethers.BigNumber,
   decimals: number,
 ) => {
-  return Number(bigNumber.toString()) / Math.pow(10, decimals);
+  return bigNumber ? Number(bigNumber.toString()) / Math.pow(10, decimals) : 0;
 };
