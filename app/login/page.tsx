@@ -19,16 +19,11 @@ const Login: NextPage = () => {
   const { address } = useAccount();
   const [writeSuccess, setWriteSuccess] = useState(false);
 
-  const { data: balance, refetch: refetchBalance } = useContractRead({
-    ...userStorageContractConfig,
-    functionName: "balances",
-    args: [address],
-  });
-
   const { data: allowance, refetch: refetchAllowance } = useContractRead({
     ...usdcContractConfig,
     functionName: "allowance",
     args: [address, userStorageContractConfig.address],
+    enabled: !!address,
   });
 
   const { data: approveData, write: approve } = useContractWrite({
@@ -45,27 +40,12 @@ const Login: NextPage = () => {
     },
   });
 
-  const { data: depositData, write: deposit } = useContractWrite({
-    ...userStorageContractConfig,
-    functionName: "deposit",
-    args: [decimalToBigNumber(1, 6)],
-  });
-
-  const { isLoading: isDepositing } = useWaitForTransaction({
-    hash: depositData?.hash,
-    timeout: 30000,
-    onSuccess: () => {
-      setWriteSuccess(true);
-    },
-  });
-
   useEffect(() => {
     if (writeSuccess) {
       setWriteSuccess(false);
       refetchAllowance();
-      refetchBalance();
     }
-  }, [writeSuccess, refetchAllowance, refetchBalance, address]);
+  }, [writeSuccess, refetchAllowance, address]);
 
   const handleLogin = async () => {
     const response = await fetch("/api/login", {
@@ -74,12 +54,14 @@ const Login: NextPage = () => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        balance: bigNumberToDecimal(balance as ethers.BigNumber, 6),
+        address: address,
       }),
     });
+    const data = await response.json();
 
-    if (response.ok) {
-      router.push("/dashboard");
+    if (data.success) {
+      if (data.isAdmin) router.push("/admin");
+      else router.push("/dashboard");
     } else {
       alert("Please deposit at least 1 USDC");
     }
@@ -87,23 +69,15 @@ const Login: NextPage = () => {
 
   return (
     <div className="flex flex-col items-start gap-4 h-full w-full">
-      <div className="flex items-center gap-2">
-        <div>USDC Balance: </div>
-        <div>{bigNumberToDecimal(balance as ethers.BigNumber, 6)}</div>
-      </div>
-      <button
-        className="bg-gray-600 rounded-md border-none px-4 py-2 disabled:cursor-not-allowed"
-        onClick={() => {
-          bigNumberToDecimal(allowance as ethers.BigNumber, 6) >= 1
-            ? deposit()
-            : approve();
-        }}
-        disabled={isApproving || isDepositing}>
-        {bigNumberToDecimal(allowance as ethers.BigNumber, 6) >= 1
-          ? "Deposit"
-          : "Approve"}
-      </button>
-      {(isApproving || isDepositing) && <div>Processing...</div>}
+      {bigNumberToDecimal(allowance as ethers.BigNumber, 6) <= 3 && (
+        <button
+          className="bg-gray-600 rounded-md border-none px-4 py-2 disabled:cursor-not-allowed"
+          onClick={() => approve()}
+          disabled={isApproving}>
+          Approve
+        </button>
+      )}
+      {isApproving && <div>Processing...</div>}
       <button
         className="bg-gray-600 rounded-md border-none px-4 py-2 disabled:cursor-not-allowed"
         onClick={handleLogin}>

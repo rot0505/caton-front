@@ -3,7 +3,7 @@ import { cookies } from "next/headers";
 
 export async function POST() {
   const response = NextResponse.json({ success: true });
-  cookies().delete("token");
+  cookies().delete("caton-token");
 
   return response;
 }

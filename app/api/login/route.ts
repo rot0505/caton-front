@@ -2,18 +2,24 @@ import { NextRequest, NextResponse } from "next/server";
 import { cookies } from "next/headers";
 
 export async function POST(req: NextRequest) {
-  const { balance } = await req.json();
+  const { address } = await req.json();
+  const adminWallet = process.env.NEXT_PUBLIC_ADMIN_WALLET;
 
-  if (balance >= 1) {
-    const response = NextResponse.json({ success: true });
+  if (address === adminWallet) {
     cookies().set({
-      name: "token",
-      value: "test-token",
-      path: "/",
+      name: "caton-token",
+      value: "admin",
     });
-
-    return response;
   } else {
-    return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
+    cookies().set({
+      name: "caton-token",
+      value: "user",
+    });
   }
+  const response = NextResponse.json({
+    success: true,
+    isAdmin: address === adminWallet,
+  });
+
+  return response;
 }
