@@ -9,6 +9,11 @@ export function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL("/login", request.url));
   }
 
+  if (request.nextUrl.pathname.startsWith("/admin")) {
+    if (token?.value !== "admin")
+      return NextResponse.redirect(new URL("/login", request.url));
+  }
+
   return NextResponse.next();
 }
 
