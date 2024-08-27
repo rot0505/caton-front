@@ -64,7 +64,6 @@ const Dashboard: React.FC = () => {
     functionName: "withdraw",
     args: [Number(balance ?? 0)],
   });
-  console.log(Number(balance ?? 0));
 
   const { isLoading: isWithdrawing } = useWaitForTransaction({
     hash: withdrawData?.hash,
