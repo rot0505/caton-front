@@ -62,8 +62,9 @@ const Dashboard: React.FC = () => {
   const { data: withdrawData, write: withdraw } = useContractWrite({
     ...userStorageContractConfig,
     functionName: "withdraw",
-    args: [decimalToBigNumber(Number(balance ?? 0), 6)],
+    args: [Number(balance ?? 0)],
   });
+  console.log(Number(balance ?? 0));
 
   const { isLoading: isWithdrawing } = useWaitForTransaction({
     hash: withdrawData?.hash,
